@@ -143,7 +143,7 @@
     reg        [no_of_col - 1 : 0] Col, Col_brst;
 
     reg 		[19:0]	  ccc;
-    reg 		[3:0]	  bit;
+//    reg 		[3:0]	  bit;
     reg 		[2:0]	  CL;
     reg 		[8:0]	  BL;
     reg  	    RIW_violate; 
