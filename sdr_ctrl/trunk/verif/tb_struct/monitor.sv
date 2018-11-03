@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////
+//   Proyecto1. Curso MP6134 Verificacion Funcional    //
+//   Archivo: monitor.sv                               //
+//   Autores: Esteban Martinez                         //
+//            Kaleb Alfaro                             //
+//            Felipe Dengo                             //
+/////////////////////////////////////////////////////////
+
+
 //Samples the interface signals, captures into transaction packet and send the packet to scoreboard.
 
 class monitor;
