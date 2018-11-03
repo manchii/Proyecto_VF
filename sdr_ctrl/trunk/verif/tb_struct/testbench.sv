@@ -1,12 +1,12 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
-//                      Proyecto1. Curso MP6134 Verificacion Funcional                      //
+//                      Proyecto1. Curso MP6134 Verificación Funcional                      //
 //                                                                                          //
 //                             Autores: Esteban Martinez                                    //
 //                                      Kaleb Alfaro                                        //
 //                                      Felipe Dengo                                        //
-//  El Proyecto consiste en la restructuracion del testbench para el controlador de SDRAM.  //
-//  Se descompone el archivo tb_top.sv, de forma mas ordenada de manera que sea facil de    //
-//  mantener y de reutlizar. El nuevo testbench se estrucuta asi:                           //
+//  El Proyecto consiste en la restructuración del testbench para el controlador de SDRAM.  //
+//  Se descompone del archivo tb_top.sv, de forma más ordenada de manera que sea fácil de    //
+//  mantener y de reutlizar. El nuevo testbench se estructura así:                           //
 //                                                                                          //
 //                                    testbench.sv                                          //
 //                                    Interface.sv                                          //
