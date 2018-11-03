@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////
+//   Proyecto1. Curso MP6134 Verificacion Funcional    //
+//   Archivo: interface.sv                             //
+//   Autores: Esteban Martinez                         //
+//            Kaleb Alfaro                             //
+//            Felipe Dengo                             //
+/////////////////////////////////////////////////////////
+
 interface intf_wishbone
   #(parameter dw=32)
   (input logic sys_clk, output logic RESETN);
