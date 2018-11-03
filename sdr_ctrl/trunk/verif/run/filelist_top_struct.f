@@ -3,11 +3,11 @@
 +incdir+../../rtl/core 
 ../tb_struct/testbench.sv
 ../tb_struct/interface.sv
-../tb_struct/random_test.sv.sv
-../tb_struct/environment.sv
 ../tb_struct/scoreboard.sv
 ../tb_struct/monitor.sv
 ../tb_struct/driver.sv
+../tb_struct/environment.sv
+../tb_struct/random_test.sv
 ../model/IS42VM16400K.V
 ../model/mt48lc2m32b2.v 
 ../model/mt48lc8m8a2.v  
@@ -20,3 +20,5 @@
 ../../rtl/core/sdrc_bs_convert.v 
 ../../rtl/core/sdrc_req_gen.v 
 ../../rtl/core/sdrc_xfr_ctl.v 
+-timescale=1ns/1ns
+
