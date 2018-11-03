@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////
+//   Proyecto1. Curso MP6134 Verificacion Funcional    //
+//   Archivo: scoreboard.sv                            //
+//   Autores: Esteban Martinez                         //
+//            Kaleb Alfaro                             //
+//            Felipe Dengo                             //
+/////////////////////////////////////////////////////////
+
+
 //gets the packet from monitor, Generated the expected result and compares with the //actual result recived from Monitor
 
 class scoreboard;
