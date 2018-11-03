@@ -1,31 +1,23 @@
 //gets the packet from monitor, Generated the expected result and compares with the //actual result recived from Monitor
 
 class scoreboard;
+   
+//--------------------
+// data/address/burst length FIFO
+//--------------------
+int dfifo[$]; // data fifo
+int afifo[$]; // address  fifo
+int bfifo[$]; // Burst Length fifo
 
-  //creating mailbox handle
-  mailbox mon2scb;
+reg [31:0] ErrCnt;
+reg [31:0] StartAddr;  
 
-  //used to count the number of transactions
-  int no_transactions;
 
   //constructor
-  function new(mailbox mon2scb);
-    //getting the mailbox handles from  environment
-    this.mon2scb = mon2scb;
+  function new();
+	this.ErrCnt = 0;
   endfunction
+  
 
-  //Compares the Actual result with the expected result
-  task main;
-    transaction trans;
-    forever begin
-      mon2scb.get(trans);
-        if((trans.a+trans.b) == trans.c)
-          $display("Result is as Expected");
-        else
-          $error("Wrong Result.\n\tExpeced: %0d Actual: %0d",(trans.a+trans.b),trans.c);
-        no_transactions++;
-      trans.display("[ Scoreboard ]");
-    end
-  endtask
-
+  
 endclass
