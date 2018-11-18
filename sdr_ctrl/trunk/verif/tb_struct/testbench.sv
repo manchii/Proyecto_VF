@@ -25,11 +25,11 @@
 //-------------------------------------------------------------------------
 
 //including interfcae and testcase files
-`include "interface.sv"
+//`include "interface.sv"
 
 //-------------------------[NOTE]---------------------------------
 //Particular testcase can be run by uncommenting, and commenting the rest
-`include "random_test.sv"
+//`include "random_test.sv"
 //`include "directed_test.sv"
 //----------------------------------------------------------------
 
