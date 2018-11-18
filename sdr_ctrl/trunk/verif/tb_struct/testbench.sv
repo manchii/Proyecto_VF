@@ -18,7 +18,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 
-`include "IS42VM16400K.V"
+//`include "IS42VM16400K.V"
 `define SDR_16BIT
 //-------------------------------------------------------------------------
 //tbench_top or testbench top, this is the top most file, in which DUT(Design Under Test) and Verification environment are connected.
