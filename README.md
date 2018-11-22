@@ -27,3 +27,12 @@ incluye una cola para datos, dirección, tamaño de ráfaga de escritura.
 
 
 ![](https://raw.githubusercontent.com/manchii/Proyecto_VF/master/images/diagram.png)
+
+
+# Proyecto 2
+
+## Estrategia de verificación
+
+Se realiza una extensión del ambiente de verificación del proyecto 1
+
+![](https://github.com/manchii/Proyecto_VF/blob/master/images/diagram2.png)
