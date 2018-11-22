@@ -42,10 +42,25 @@ aleatoriedad y restricciones.
 
 Se modifica el Scoreboard, de forma que pueda manejar escrituras y lecturas en orden y desorden, mediante la adicion de un paramentro aleatorio que seleccione el modo de funcionamiento.
 
-En el RTL se reemplazan todos segmentos de codigo donde se hace pruebas de funcionamiento por aserciones.
+En el RTL se reemplazan todos segmentos de codigo del tipo mostrado a continuacion, por aserciones.
 
-Se agrega un bloque al ambiente de prueba llamado Whitebox, que incluye las senales internas del DUV.
+```systemverilog
+  always @(posedge wb_clk_i) begin
+         if(cmdfifo full == 1'b1 && cmdfifo wr ==1'b1) begin
+		     $display ("ERROR:%m COMMAND FIFO WRITE OVERFLOW");
+		     end
+   end
+```
 
+Se agrega un bloque al ambiente de prueba llamado Whitebox, que incluye las senales internas del DUV, como ejemplo:
+
+```systemverilog
+Parameter TOP_PATH = top.dut;
+Interface whitebox();
+logic var;
+assign var = `TOP_PATH.module.submodule.signal;
+endinterface
+```
 Se agrega un bloque assertion que incluye aserciones concurrentes para la inicializacion y comprobacion del funcionamiento de la DRAM.
 
 Se agregan aserciones para las reglas 3.00, 3.05, 3.10, 3.25, 3.35 del Wishbone revision b4.
