@@ -31,8 +31,30 @@ incluye una cola para datos, dirección, tamaño de ráfaga de escritura.
 
 # Proyecto 2
 
-## Estrategia de verificación
+## Estrategia de verificación.
 
-Se realiza una extensión del ambiente de verificación del proyecto 1
+Se realiza una extensión del ambiente de verificación del proyecto 1.
 
 ![](https://github.com/manchii/Proyecto_VF/blob/master/images/diagram2.png)
+
+Se agrega clase estimulo, donde se definen los casos de prueba mediante a
+aleatoriedad y restricciones.
+
+Se modifica el Scoreboard, de forma que pueda manejar escrituras y lecturas en orden y desorden, mediante la adicion de un paramentro aleatorio que seleccione el modo de funcionamiento.
+
+En el RTL se reemplazan todos segmentos de codigo donde se hace pruebas de funcionamiento por aserciones.
+
+Se agrega un bloque al ambiente de prueba llamado Whitebox, que incluye las senales internas del DUV.
+
+Se agrega un bloque assertion que incluye aserciones concurrentes para la inicializacion y comprobacion del funcionamiento de la DRAM.
+
+Se agregan aserciones para las reglas 3.00, 3.05, 3.10, 3.25, 3.35 del Wishbone revision b4.
+
+
+
+
+
+
+
+
+
