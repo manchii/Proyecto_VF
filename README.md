@@ -42,7 +42,7 @@ aleatoriedad y restricciones.
 
 Se modifica el Scoreboard, de forma que pueda manejar escrituras y lecturas en orden y desorden, mediante la adicion de un paramentro aleatorio que seleccione el modo de funcionamiento.
 
-En el RTL se reemplazan todos segmentos de codigo del tipo mostrado a continuacion, por aserciones.
+En el RTL se reemplazan todos segmentos de codigo del tipo mostrado a continuacion
 
 ```systemverilog
   always @(posedge wb_clk_i) begin
@@ -50,6 +50,13 @@ En el RTL se reemplazan todos segmentos de codigo del tipo mostrado a continuaci
 		     $display ("ERROR:%m COMMAND FIFO WRITE OVERFLOW");
 		     end
    end
+```
+
+por aserciones
+
+```systemverilog
+  assert property ( @(posedge sdram_clk) ~(rddatafifo_full == 1'b1 && rddatafifo_wr == 1'b1)) 
+  	else $error("ERROR:%m READ DATA FIFO WRITE OVERFLOW");
 ```
 
 Se agrega un bloque al ambiente de prueba llamado Whitebox, que incluye las senales internas del DUV, como ejemplo:
