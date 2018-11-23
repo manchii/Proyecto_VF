@@ -81,7 +81,8 @@ En la siguiente tabla se muestra la descripción de las reglas 3.00, 3.05, 3.10,
 | 3.10   | All WISHBONE interfaces MUST be capable of reacting to [RST_I] at any time.                                                                                                                                                                                                                                          |
 | 3.15   | All self-starting state machines and counters in WISHBONE interfaces MUST initialize themselves at the rising [CLK_I] edge following the assertion of [RST_I]. They MUST stay in the initialized state until the rising [CLK_I] edge that follows the negation of [RST_I].                                           |
 | 3.25   | MASTER interfaces MUST assert [CYC_O] for the duration of SINGLE READ / WRITE, BLOCK and RMW cycles. [CYC_O] MUST be asserted no later than the rising [CLK_I] edge that qualifies the assertion of [STB_O]. [CYC_O] MUST be negated no earlier than the rising [CLK_I] edge that qualifies the negation of [STB_O]. |
-| 3.35   | In standard mode the cycle termination signals [ACK_O], [ERR_O], and [RTY_O] must be generated in response to the logical AND of [CYC_I] and [STB_I]                                                                                                                                                                 |
+| 3.35   | In standard mode the cycle termination signals [ACK_O], [ERR_O], and [RTY_O] must be generated in response to the logical AND of [CYC_I] and [STB_I]|
+
 Se empieza afirmando que todas las interfaces de WISHBONE DEBEN de inicializarse en el flanco positivo de la señal [CLK_I] y la aserción de la señal [RST_I]. Se deben mantener en estado inicial hasta que se tenga la negación de la señal [RST_I]. Para que el reinicio de todas las interfaces WISHBONE se lleven a cabo, la señal [RST_I] debe mantenerse en aserción por lo menos un ciclo de reloj. 
 
 En el caso de los MASTERS, se cumple que:
