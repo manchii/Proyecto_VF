@@ -12,24 +12,26 @@
 //                                    Interface.sv                                          //
 //                                    random_test.sv                                        //
 //                                    environment.sv                                        //
-//                                    driver.sv                                             //
+//                     			      driver.sv                                             //
 //                                    scoreboard.sv                                         //
 //                                    monitor.sv                                            //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//`include "IS42VM16400K.V"
+`include "IS42VM16400K.V"
 `define SDR_16BIT
 //-------------------------------------------------------------------------
 //tbench_top or testbench top, this is the top most file, in which DUT(Design Under Test) and Verification environment are connected.
 //-------------------------------------------------------------------------
 
 //including interfcae and testcase files
-//`include "interface.sv"
+`include "interface.sv"
+`include "whitebox.sv"
 
 //-------------------------[NOTE]---------------------------------
 //Particular testcase can be run by uncommenting, and commenting the rest
 //`include "random_test.sv"
+`include "random_test_2.sv"
 //`include "directed_test.sv"
 //----------------------------------------------------------------
 
@@ -79,7 +81,7 @@ intf_wishbone #(.dw(dw)) i_intf_wishbone(sys_clk,RESETN);
   //Testcase instance, interface handle is passed to test as an argument
 
 
-  test t1(i_intf_wishbone,i_intf_sdrwam16); //--- when ready
+  test_2 t1(i_intf_wishbone,i_intf_sdrwam16); //--- when ready
 
 
 
@@ -130,6 +132,8 @@ intf_wishbone #(.dw(dw)) i_intf_wishbone(sys_clk,RESETN);
 
 );
 
+
+  assertions i_assertions(); 
 
   //enabling the wave dump
   initial begin
