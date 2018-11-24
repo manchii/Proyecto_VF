@@ -8,9 +8,9 @@
 
 
 
-//`include "scoreboard.sv"
-//`include "driver.sv"
-//`include "monitor.sv"
+`include "scoreboard.sv"
+`include "driver.sv"
+`include "monitor.sv"
 
 
 class environment;
