@@ -1,4 +1,6 @@
-//`include "environment.sv"
+`include "environment.sv"
+
+
 program test(intf_wishbone i_intf_wishbone, intf_sdram16 i_intf_sdrwam16);
 
   //declaring environment instance
@@ -187,3 +189,4 @@ program test(intf_wishbone i_intf_wishbone, intf_sdram16 i_intf_sdrwam16);
 
 
 endprogram
+
