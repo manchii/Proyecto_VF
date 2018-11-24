@@ -33,8 +33,11 @@ input [31:0] Address;
 input [7:0]  bl;
 int i;
 begin
-  scb.afifo.push_back(Address);
-  scb.bfifo.push_back(bl);
+//  scb.afifo.push_back(Address);
+//  scb.bfifo.push_back(bl);
+  queue_ret sample;
+  sample.address = Address;
+  sample.burst = bl;
 
   @ (negedge vif.sys_clk);
    $display("Write Address: %x, Burst Size: %d",Address,bl);
@@ -46,7 +49,8 @@ begin
       vif.wb_sel_i        = 4'b1111;
       vif.wb_addr_i       = Address[31:2]+i;
       vif.wb_dat_i        = $random & 32'hFFFFFFFF;
-     scb.dfifo.push_back(vif.wb_dat_i);
+     //scb.dfifo.push_back(vif.wb_dat_i);
+     sample.data.push_back(vif.wb_dat_i);
 
       do begin
         @ (posedge vif.sys_clk);
@@ -55,6 +59,7 @@ begin
 
      $display("Status: Burst-No: %d  Write Address: %x  WriteData: %x ",i,vif.wb_addr_i,vif.wb_dat_i);
    end
+  scb.push(sample);
    vif.wb_stb_i        = 0;
    vif.wb_cyc_i        = 0;
    vif.wb_we_i         = 'hx;
