@@ -1,40 +1,40 @@
 /*********************************************************************
-                                                              
+
   ASYNC FIFO
-                                                              
-  This file is part of the sdram controller project           
-  http://www.opencores.org/cores/sdr_ctrl/                    
-                                                              
-  Description: ASYNC FIFO 
-                                                              
-  To Do:                                                      
-    nothing                                                   
-                                                              
-  Author(s):  Dinesh Annayya, dinesha@opencores.org                 
-                                                             
- Copyright (C) 2000 Authors and OPENCORES.ORG                
-                                                             
- This source file may be used and distributed without         
- restriction provided that this copyright statement is not    
- removed from the file and that any derivative work contains  
- the original copyright notice and the associated disclaimer. 
-                                                              
- This source file is free software; you can redistribute it   
- and/or modify it under the terms of the GNU Lesser General   
- Public License as published by the Free Software Foundation; 
- either version 2.1 of the License, or (at your option) any   
-later version.                                               
-                                                              
- This source is distributed in the hope that it will be       
- useful, but WITHOUT ANY WARRANTY; without even the implied   
- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR      
- PURPOSE.  See the GNU Lesser General Public License for more 
- details.                                                     
-                                                              
- You should have received a copy of the GNU Lesser General    
- Public License along with this source; if not, download it   
- from http://www.opencores.org/lgpl.shtml                     
-                                                              
+
+  This file is part of the sdram controller project
+  http://www.opencores.org/cores/sdr_ctrl/
+
+  Description: ASYNC FIFO
+
+  To Do:
+    nothing
+
+  Author(s):  Dinesh Annayya, dinesha@opencores.org
+
+ Copyright (C) 2000 Authors and OPENCORES.ORG
+
+ This source file may be used and distributed without
+ restriction provided that this copyright statement is not
+ removed from the file and that any derivative work contains
+ the original copyright notice and the associated disclaimer.
+
+ This source file is free software; you can redistribute it
+ and/or modify it under the terms of the GNU Lesser General
+ Public License as published by the Free Software Foundation;
+ either version 2.1 of the License, or (at your option) any
+later version.
+
+ This source is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the GNU Lesser General Public License for more
+ details.
+
+ You should have received a copy of the GNU Lesser General
+ Public License along with this source; if not, download it
+ from http://www.opencores.org/lgpl.shtml
+
 *******************************************************************/
 
 //-------------------------------------------
@@ -62,7 +62,7 @@ module async_fifo (wr_clk,
    parameter FULL_DP = DP;
    parameter EMPTY_DP = 1'b0;
 
-   parameter AW = (DP == 2)   ? 1 : 
+   parameter AW = (DP == 2)   ? 1 :
 		  (DP == 4)   ? 2 :
                   (DP == 8)   ? 3 :
                   (DP == 16)  ? 4 :
@@ -81,18 +81,18 @@ module async_fifo (wr_clk,
 
    // synopsys translate_off
 
-   initial begin
-      if (AW == 0) begin
-         $display ("%m : ERROR!!! Fifo depth %d not in range 2 to 256", DP);
-      end // if (AW == 0)
-   end // initial begin
-
+   //initial begin
+   //   if (AW == 0) begin
+   //      $display ("%m : ERROR!!! Fifo depth %d not in range 2 to 256", DP);
+   //   end // if (AW == 0)
+   //end // initial begin
+  initial begin assert(AW>0) else $error("%m : ERROR!!! Fifo depth %d not in range 2 to 256", DP); end
    // synopsys translate_on
 
    reg [W-1 : 0]    mem[DP-1 : 0];
 
    /*********************** write side ************************/
-   reg [AW:0] sync_rd_ptr_0, sync_rd_ptr_1; 
+   reg [AW:0] sync_rd_ptr_0, sync_rd_ptr_1;
    wire [AW:0] sync_rd_ptr;
    reg [AW:0] wr_ptr, grey_wr_ptr;
    reg [AW:0] grey_rd_ptr;
@@ -110,7 +110,7 @@ module async_fifo (wr_clk,
 	if (!wr_reset_n) begin
 		wr_ptr <= 0;
 		grey_wr_ptr <= 0;
-		full_q <= 0;	
+		full_q <= 0;
 	end
 	else if (wr_en) begin
 		wr_ptr <= wr_ptr_inc;
@@ -145,7 +145,7 @@ module async_fifo (wr_clk,
 		sync_rd_ptr_1 <= 0;
 	end
 	else begin
-		sync_rd_ptr_0 <= grey_rd_ptr_dly;		
+		sync_rd_ptr_0 <= grey_rd_ptr_dly;
 		sync_rd_ptr_1 <= sync_rd_ptr_0;
 	end
     end
@@ -153,7 +153,7 @@ module async_fifo (wr_clk,
     assign sync_rd_ptr = grey2bin(sync_rd_ptr_1);
 
    /************************ read side *****************************/
-   reg [AW:0] sync_wr_ptr_0, sync_wr_ptr_1; 
+   reg [AW:0] sync_wr_ptr_0, sync_wr_ptr_1;
    wire [AW:0] sync_wr_ptr;
    reg [AW:0] rd_ptr;
    reg empty_q;
@@ -162,7 +162,7 @@ module async_fifo (wr_clk,
    wire [AW:0] rd_ptr_inc = rd_ptr + 1'b1;
    wire [AW:0] sync_wr_ptr_dec = sync_wr_ptr - 1'b1;
    wire [AW:0] rd_cnt = get_cnt(sync_wr_ptr, rd_ptr);
- 
+
    assign empty_c  = (rd_cnt == 0) ? 1'b1 : 1'b0;
    assign aempty_c = (rd_cnt == 1) ? 1'b1 : 1'b0;
 
@@ -209,13 +209,13 @@ module async_fifo (wr_clk,
 	   sync_wr_ptr_1 <= 0;
 	end
 	else begin
-	   sync_wr_ptr_0 <= grey_wr_ptr_dly;		
+	   sync_wr_ptr_0 <= grey_wr_ptr_dly;
 	   sync_wr_ptr_1 <= sync_wr_ptr_0;
 	end
     end
     assign sync_wr_ptr = grey2bin(sync_wr_ptr_1);
 
-	
+
 /************************ functions ******************************/
 function [AW:0] bin2grey;
 input [AW:0] bin;
@@ -252,7 +252,7 @@ function [1:0] do_grey;
 input [2:0] bin;
 begin
 	if (bin[2]) begin  // do reverse grey
-		case (bin[1:0]) 
+		case (bin[1:0])
 			2'b00: do_grey = 2'b10;
 			2'b01: do_grey = 2'b11;
 			2'b10: do_grey = 2'b01;
@@ -260,7 +260,7 @@ begin
 		endcase
 	end
 	else begin
-		case (bin[1:0]) 
+		case (bin[1:0])
 			2'b00: do_grey = 2'b00;
 			2'b01: do_grey = 2'b01;
 			2'b10: do_grey = 2'b11;
@@ -291,12 +291,12 @@ begin
 	end
 end
 endfunction
-			
+
 function [AW:0] get_cnt;
 input [AW:0] wr_ptr, rd_ptr;
 begin
 	if (wr_ptr >= rd_ptr) begin
-		get_cnt = (wr_ptr - rd_ptr);	
+		get_cnt = (wr_ptr - rd_ptr);
 	end
 	else begin
 		get_cnt = DP*2 - (rd_ptr - wr_ptr);
@@ -305,19 +305,25 @@ end
 endfunction
 
 // synopsys translate_off
-always @(posedge wr_clk) begin
-   if (wr_en && full) begin
-      $display($time, "%m Error! afifo overflow!");
-      $stop;
-   end
-end
+//always @(posedge wr_clk) begin
+//   if (wr_en && full) begin
+//      $display($time, "%m Error! afifo overflow!");
+//      $stop;
+//   end
+//end
 
-always @(posedge rd_clk) begin
-   if (rd_en && empty) begin
-      $display($time, "%m error! afifo underflow!");
-      $stop;
-   end
-end
+//always @(posedge rd_clk) begin
+//   assert (rd_en && empty) begin
+//      $display($time, "%m error! afifo underflow!");
+//      $stop;
+//   end
+//end
+
+  assert property (@(posedge wr_clk) disable iff($isunknown(wr_en)) ~(wr_en && full)) else $error($time, "%m Error! afifo overflow!");
+
+    assert property (@(posedge rd_clk) disable iff($isunknown(rd_en)) ~(rd_en && empty)) else $error($time, "%m Error! afifo underflow!");
+
+
 // synopsys translate_on
 
 endmodule

@@ -1,50 +1,50 @@
 /*********************************************************************
-                                                              
-  This file is part of the sdram controller project           
-  http://www.opencores.org/cores/sdr_ctrl/                    
-                                                              
+
+  This file is part of the sdram controller project
+  http://www.opencores.org/cores/sdr_ctrl/
+
   Description: WISHBONE to SDRAM Controller Bus Transalator
-     1. This module translate the WISHBONE protocol to custom sdram controller i/f 
+     1. This module translate the WISHBONE protocol to custom sdram controller i/f
      2. Also Handle the clock domain change from Application layer to Sdram layer
-                                                              
-  To Do:                                                      
-    nothing                                                   
-                                                              
-  Author(s):  Dinesh Annayya, dinesha@opencores.org                 
+
+  To Do:
+    nothing
+
+  Author(s):  Dinesh Annayya, dinesha@opencores.org
   Version  : 0.0 - Initial Release
              0.1 - 2nd Feb 2012
-	           Async Fifo towards the application layer is selected 
+	           Async Fifo towards the application layer is selected
 		   with Registered Full Generation
              0.2 - 2nd Feb 2012
-	           Pending Read generation bug fix done to handle backto back write 
+	           Pending Read generation bug fix done to handle backto back write
 		   followed by read request
-                                                             
- Copyright (C) 2000 Authors and OPENCORES.ORG                
-                                                             
 
- This source file may be used and distributed without         
- restriction provided that this copyright statement is not    
- removed from the file and that any derivative work contains  
- the original copyright notice and the associated disclaimer. 
-                                                              
- This source file is free software; you can redistribute it   
- and/or modify it under the terms of the GNU Lesser General   
- Public License as published by the Free Software Foundation; 
- either version 2.1 of the License, or (at your option) any   
-later version.                                               
-                                                              
- This source is distributed in the hope that it will be       
- useful, but WITHOUT ANY WARRANTY; without even the implied   
- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR      
- PURPOSE.  See the GNU Lesser General Public License for more 
- details.                                                     
-                                                              
- You should have received a copy of the GNU Lesser General    
- Public License along with this source; if not, download it   
- from http://www.opencores.org/lgpl.shtml                     
-                                                              
+ Copyright (C) 2000 Authors and OPENCORES.ORG
+
+
+ This source file may be used and distributed without
+ restriction provided that this copyright statement is not
+ removed from the file and that any derivative work contains
+ the original copyright notice and the associated disclaimer.
+
+ This source file is free software; you can redistribute it
+ and/or modify it under the terms of the GNU Lesser General
+ Public License as published by the Free Software Foundation;
+ either version 2.1 of the License, or (at your option) any
+later version.
+
+ This source is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the GNU Lesser General Public License for more
+ details.
+
+ You should have received a copy of the GNU Lesser General
+ Public License along with this source; if not, download it
+ from http://www.opencores.org/lgpl.shtml
+
 *******************************************************************/
-
+//`include "async_fifo.v"
 
 module wb2sdrc (
       // WB bus
@@ -59,10 +59,10 @@ module wb2sdrc (
                     wb_sel_i            ,
                     wb_dat_o            ,
                     wb_cyc_i            ,
-                    wb_cti_i            , 
+                    wb_cti_i            ,
 
 
-      //SDRAM Controller Hand-Shake Signal 
+      //SDRAM Controller Hand-Shake Signal
                     sdram_clk           ,
                     sdram_resetn        ,
                     sdr_req             ,
@@ -76,17 +76,17 @@ module wb2sdrc (
                     sdr_rd_valid        ,
                     sdr_last_rd         ,
                     sdr_wr_data         ,
-                    sdr_rd_data        
+                    sdr_rd_data
 
-      ); 
+      );
 
 parameter      dw              = 32;  // data width
 parameter      tw              = 8;   // tag id width
-parameter      bl              = 9;   // burst_lenght_width 
+parameter      bl              = 9;   // burst_lenght_width
 parameter      APP_AW          = 26;  // Application Address Width
 //--------------------------------------
 // Wish Bone Interface
-// -------------------------------------      
+// -------------------------------------
 input                   wb_rst_i           ;
 input                   wb_clk_i           ;
 
@@ -100,23 +100,23 @@ output [dw-1:0]         wb_dat_o           ;
 input                   wb_cyc_i           ;
 input  [2:0]            wb_cti_i           ;
 /***************************************************
-The Cycle Type Idenfier [CTI_IO()] Address Tag provides 
-additional information about the current cycle. 
+The Cycle Type Idenfier [CTI_IO()] Address Tag provides
+additional information about the current cycle.
 The MASTER sends this information to the SLAVE. The SLAVE can use this
 information to prepare the response for the next cycle.
 Table 4-2 Cycle Type Identifiers
 CTI_O(2:0) Description
-‘000’ Classic cycle.
-‘001’ Constant address burst cycle
-‘010’ Incrementing burst cycle
-‘011’ Reserved
-‘100’ Reserved
-‘101 Reserved
-‘110’ Reserved
-‘111’ End-of-Burst
+ï¿½000ï¿½ Classic cycle.
+ï¿½001ï¿½ Constant address burst cycle
+ï¿½010ï¿½ Incrementing burst cycle
+ï¿½011ï¿½ Reserved
+ï¿½100ï¿½ Reserved
+ï¿½101 Reserved
+ï¿½110ï¿½ Reserved
+ï¿½111ï¿½ End-of-Burst
 ****************************************************/
 //--------------------------------------------
-// SDRAM controller Interface 
+// SDRAM controller Interface
 //--------------------------------------------
 input                   sdram_clk          ; // sdram clock
 input                   sdram_resetn       ; // sdram reset
@@ -157,7 +157,7 @@ reg                     pending_read       ;
 
 assign wb_ack_o = (wb_stb_i && wb_cyc_i && wb_we_i) ?  // Write Phase
 	                  ((!cmdfifo_full) && (!wrdatafifo_full)) :
-		  (wb_stb_i && wb_cyc_i && !wb_we_i) ? // Read Phase 
+		  (wb_stb_i && wb_cyc_i && !wb_we_i) ? // Read Phase
 		           !rddatafifo_empty : 1'b0;
 
 //---------------------------------------------------------------------------
@@ -168,7 +168,7 @@ assign wb_ack_o = (wb_stb_i && wb_cyc_i && wb_we_i) ?  // Write Phase
 //                      is no pending read request.
 //---------------------------------------------------------------------------
 wire           cmdfifo_wr   = (wb_stb_i && wb_cyc_i && wb_we_i && (!cmdfifo_full) ) ? wb_ack_o :
-	                      (wb_stb_i && wb_cyc_i && !wb_we_i && (!cmdfifo_full)) ? !pending_read: 1'b0 ; 
+	                      (wb_stb_i && wb_cyc_i && !wb_we_i && (!cmdfifo_full)) ? !pending_read: 1'b0 ;
 
 //---------------------------------------------------------------------------
 // command fifo read generation
@@ -195,8 +195,8 @@ wire [bl-1:0]  burst_length  = 1;  // 0 Mean 1 Transfer
 // We need to identify the pending read request.
 // Once we accept the read request, we should not accept one more read
 // request, untill we have transmitted the read data.
-//  Pending Read will 
-//     set - with Read Request 
+//  Pending Read will
+//     set - with Read Request
 //     reset - with Read Request + Ack
 // ----------------------------------------------------------------------------
 always @(posedge wb_rst_i or posedge wb_clk_i) begin
@@ -213,14 +213,14 @@ end
 // Async Command FIFO. This block handle the clock domain change from
 // Application layer to SDRAM Controller
 // ------------------------------------------------------------------
-   // Address + Burst Length + W/R Request 
+   // Address + Burst Length + W/R Request
     async_fifo #(.W(APP_AW+bl+1),.DP(4),.WR_FAST(1'b0), .RD_FAST(1'b0)) u_cmdfifo (
      // Write Path Sys CLock Domain
           .wr_clk             (wb_clk_i           ),
           .wr_reset_n         (!wb_rst_i          ),
           .wr_en              (cmdfifo_wr         ),
-          .wr_data            ({burst_length, 
-	                        !wb_we_i, 
+          .wr_data            ({burst_length,
+	                        !wb_we_i,
 				wb_addr_i}        ),
           .afull              (                   ),
           .full               (cmdfifo_full       ),
@@ -237,18 +237,25 @@ end
      );
 
 // synopsys translate_off
-always @(posedge wb_clk_i) begin
-  if (cmdfifo_full == 1'b1 && cmdfifo_wr == 1'b1)  begin
-     $display("ERROR:%m COMMAND FIFO WRITE OVERFLOW");
-  end 
-end 
+//always @(posedge wb_clk_i) begin
+//  if (cmdfifo_full == 1'b1 && cmdfifo_wr == 1'b1)  begin
+//     $display("ERROR:%m COMMAND FIFO WRITE OVERFLOW");
+//  end
+//end
 // synopsys translate_on
 // synopsys translate_off
-always @(posedge sdram_clk) begin
-   if (cmdfifo_empty == 1'b1 && cmdfifo_rd == 1'b1) begin
-      $display("ERROR:%m COMMAND FIFO READ OVERFLOW");
-   end
-end 
+//always @(posedge sdram_clk) begin
+//   if (cmdfifo_empty == 1'b1 && cmdfifo_rd == 1'b1) begin
+//      $display("ERROR:%m COMMAND FIFO READ OVERFLOW");
+//   end
+//end
+
+assert property ( @(posedge wb_clk_i)
+                   disable iff($isunknown(cmdfifo_full) || $isunknown(cmdfifo_wr)) ~(cmdfifo_full == 1'b1 && cmdfifo_wr == 1'b1)) else $error("ERROR:%m COMMAND FIFO WRITE OVERFLOW");
+
+assert property ( @(posedge wb_clk_i)
+                     disable iff($isunknown(cmdfifo_empty) || $isunknown(cmdfifo_rd)) ~(cmdfifo_empty == 1'b1 && cmdfifo_rd == 1'b1)) else $error("ERROR:%m COMMAND FIFO READ OVERFLOW");
+
 // synopsys translate_on
 
 //---------------------------------------------------------------------
@@ -267,7 +274,7 @@ wire  wrdatafifo_rd  = sdr_wr_next;
 
 //------------------------------------------------------------------------
 // Async Write Data FIFO
-//    This block handle the clock domain change over + Write Data + Byte mask 
+//    This block handle the clock domain change over + Write Data + Byte mask
 //    From Application layer to SDRAM controller layer
 //------------------------------------------------------------------------
 
@@ -277,7 +284,7 @@ wire  wrdatafifo_rd  = sdr_wr_next;
           .wr_clk             (wb_clk_i           ),
           .wr_reset_n         (!wb_rst_i          ),
           .wr_en              (wrdatafifo_wr      ),
-          .wr_data            ({~wb_sel_i, 
+          .wr_data            ({~wb_sel_i,
 	                         wb_dat_i}        ),
           .afull              (                   ),
           .full               (wrdatafifo_full    ),
@@ -296,14 +303,14 @@ wire  wrdatafifo_rd  = sdr_wr_next;
 always @(posedge wb_clk_i) begin
   if (wrdatafifo_full == 1'b1 && wrdatafifo_wr == 1'b1)  begin
      $display("ERROR:%m WRITE DATA FIFO WRITE OVERFLOW");
-  end 
-end 
+  end
+end
 
 always @(posedge sdram_clk) begin
    if (wrdatafifo_empty == 1'b1 && wrdatafifo_rd == 1'b1) begin
       $display("ERROR:%m WRITE DATA FIFO READ OVERFLOW");
    end
-end 
+end
 // synopsys translate_on
 
 // -------------------------------------------------------------------
@@ -325,7 +332,7 @@ wire    rddatafifo_rd = wb_ack_o & !wb_we_i;
 // Async Read FIFO
 // This block handles the clock domain change over + Read data from SDRAM
 // controller to Application layer.
-//  Note: 
+//  Note:
 //    1. READ DATA FIFO depth is kept small, assuming that Sys-CLock > SDRAM Clock
 //       READ DATA + EOP
 //    2. EOP indicate, last transfer of Burst Read Access. use-full for future
@@ -354,18 +361,25 @@ wire    rddatafifo_rd = wb_ack_o & !wb_we_i;
      );
 
 // synopsys translate_off
-always @(posedge sdram_clk) begin
-  if (rddatafifo_full == 1'b1 && rddatafifo_wr == 1'b1)  begin
-     $display("ERROR:%m READ DATA FIFO WRITE OVERFLOW");
-  end 
-end 
+//always @(posedge sdram_clk) begin
+//  if (rddatafifo_full == 1'b1 && rddatafifo_wr == 1'b1)  begin
+//     $display("ERROR:%m READ DATA FIFO WRITE OVERFLOW");
+//  end
+//end
 
-always @(posedge wb_clk_i) begin
-   if (rddatafifo_empty == 1'b1 && rddatafifo_rd == 1'b1) begin
-      $display("ERROR:%m READ DATA FIFO READ OVERFLOW");
-   end
-end 
+//always @(posedge wb_clk_i) begin
+//   if (rddatafifo_empty == 1'b1 && rddatafifo_rd == 1'b1) begin
+//      $display("ERROR:%m READ DATA FIFO READ OVERFLOW");
+//   end
+//end
+
+  assert property ( @(posedge sdram_clk)
+                   disable iff($isunknown(rddatafifo_full) || $isunknown(rddatafifo_wr)) ~(rddatafifo_full == 1'b1 && rddatafifo_wr == 1'b1)) else $error("ERROR:%m READ DATA FIFO WRITE OVERFLOW");
+
+    assert property ( @(posedge wb_clk_i)
+                     disable iff($isunknown(rddatafifo_empty) || $isunknown(rddatafifo_rd)) ~(rddatafifo_empty == 1'b1 && rddatafifo_rd == 1'b1)) else $error("ERROR:%m READ DATA FIFO READ UNDERFLOW");
+
 // synopsys translate_on
 
- 
+
 endmodule

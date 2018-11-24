@@ -1,50 +1,48 @@
 /*********************************************************************
-                                                              
-  SDRAM Controller Bank Controller
-                                                              
-  This file is part of the sdram controller project           
-  http://www.opencores.org/cores/sdr_ctrl/                    
-                                                              
-  Description: 
-    This module takes requests from sdrc_req_gen, checks for page hit/miss and
-    issues precharge/activate commands and then passes the request to sdrc_xfr_ctl. 
-                                                              
-  To Do:                                                      
-    nothing                                                   
-                                                              
-  Author(s):                                                  
-      - Dinesh Annayya, dinesha@opencores.org                 
-  Version  :  1.0  - 8th Jan 2012
-                                                              
 
-                                                             
- Copyright (C) 2000 Authors and OPENCORES.ORG                
-                                                             
- This source file may be used and distributed without         
- restriction provided that this copyright statement is not    
- removed from the file and that any derivative work contains  
- the original copyright notice and the associated disclaimer. 
-                                                              
- This source file is free software; you can redistribute it   
- and/or modify it under the terms of the GNU Lesser General   
- Public License as published by the Free Software Foundation; 
- either version 2.1 of the License, or (at your option) any   
-later version.                                               
-                                                              
- This source is distributed in the hope that it will be       
- useful, but WITHOUT ANY WARRANTY; without even the implied   
- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR      
- PURPOSE.  See the GNU Lesser General Public License for more 
- details.                                                     
-                                                              
- You should have received a copy of the GNU Lesser General    
- Public License along with this source; if not, download it   
- from http://www.opencores.org/lgpl.shtml                     
-                                                              
+  SDRAM Controller Bank Controller
+
+  This file is part of the sdram controller project
+  http://www.opencores.org/cores/sdr_ctrl/
+
+  Description:
+    This module takes requests from sdrc_req_gen, checks for page hit/miss and
+    issues precharge/activate commands and then passes the request to sdrc_xfr_ctl.
+
+  To Do:
+    nothing
+
+  Author(s):
+      - Dinesh Annayya, dinesha@opencores.org
+  Version  :  1.0  - 8th Jan 2012
+
+
+
+ Copyright (C) 2000 Authors and OPENCORES.ORG
+
+ This source file may be used and distributed without
+ restriction provided that this copyright statement is not
+ removed from the file and that any derivative work contains
+ the original copyright notice and the associated disclaimer.
+
+ This source file is free software; you can redistribute it
+ and/or modify it under the terms of the GNU Lesser General
+ Public License as published by the Free Software Foundation;
+ either version 2.1 of the License, or (at your option) any
+later version.
+
+ This source is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the GNU Lesser General Public License for more
+ details.
+
+ You should have received a copy of the GNU Lesser General
+ Public License along with this source; if not, download it
+ from http://www.opencores.org/lgpl.shtml
+
 *******************************************************************/
 
-
-`include "sdrc_define.v"
 
 module sdrc_bank_ctl (clk,
 		     reset_n,
@@ -76,7 +74,7 @@ module sdrc_bank_ctl (clk,
 		     b2x_len,	   // transfer length
 		     b2x_cmd,	   // transfer command
 		     x2b_ack,	   // command accepted
-		     
+
 		     /* Status to/from xfr_ctl */
 		     b2x_tras_ok,  // TRAS OK for all banks
 		     x2b_refresh,  // We did a refresh
@@ -93,13 +91,13 @@ module sdrc_bank_ctl (clk,
 		     tras_delay,   // Active to precharge delay
 		     trp_delay,	   // Precharge to active delay
 		     trcd_delay);  // Active to R/W delay
-   
-parameter  SDR_DW   = 16;  // SDR Data Width 
+
+parameter  SDR_DW   = 16;  // SDR Data Width
 parameter  SDR_BW   = 2;   // SDR Byte Width
    input                        clk, reset_n;
 
    input [1:0] 			a2b_req_depth;
-   
+
    /* Req from bank_ctl */
    input 			r2b_req, r2b_start, r2b_last,
 				r2b_write, r2b_wrap;
@@ -125,7 +123,7 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
    input [3:0] 			x2b_pre_ok;
    input 			x2b_refresh, x2b_act_ok, x2b_rdok,
 				x2b_wrok;
-   
+
    input [3:0] 			tras_delay, trp_delay, trcd_delay;
 
    input [1:0] xfr_bank_sel;
@@ -133,7 +131,7 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
    /****************************************************************************/
    // Internal Nets
 
-   wire [3:0] 			r2i_req, i2r_ack, i2x_req, 
+   wire [3:0] 			r2i_req, i2r_ack, i2x_req,
 				i2x_start, i2x_last, i2x_wrap, tras_ok;
    wire [12:0] 			i2x_addr0, i2x_addr1, i2x_addr2, i2x_addr3;
    wire [`REQ_BW-1:0] 	i2x_len0, i2x_len1, i2x_len2, i2x_len3;
@@ -148,7 +146,7 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
    wire [1:0] 			b2x_cmd;
    wire [3:0] 			x2i_ack;
    reg [1:0] 			b2x_ba;
-   
+
    reg [`SDR_REQ_ID_W-1:0] 	curr_id;
 
    wire [1:0] 			xfr_ba;
@@ -164,7 +162,7 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
    wire [3:0] 			rank_req, rank_wr_sel;
    wire 			rank_fifo_wr, rank_fifo_rd;
    wire 			rank_fifo_full, rank_fifo_mt;
-   
+
    wire [12:0] bank0_row, bank1_row, bank2_row, bank3_row;
 
    assign  b2x_tras_ok        = &tras_ok;
@@ -185,69 +183,69 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
 		    (r2b_ba == 2'b11) ? i2r_ack[3] : 1'b0;
    ********************/
    // Assumption: Only one Ack Will be asserted at a time.
-   assign b2r_ack  =|i2r_ack; 
+   assign b2r_ack  =|i2r_ack;
 
    assign b2r_arb_ok = ~rank_fifo_full;
-   
+
    // Put the requests from the 4 bank_fsms into a 4 deep shift
    // register file. The earliest request is prioritized over the
    // later requests. Also the number of requests we are allowed to
    // buffer is limited by a 2 bit external input
-   
+
    // Mux the req/cmd to xfr_ctl. Allow RD/WR commands from the request in
    // rank0, allow only PR/ACT commands from the requests in other ranks
    // If the rank_fifo is empty, send the request from the bank addressed by
-   // r2b_ba 
+   // r2b_ba
 
    // In FPGA Mode, to improve the timing, also send the rank_ba
    assign xfr_ba = (`TARGET_DESIGN == `FPGA) ? rank_ba[1:0]:
 	           ((rank_fifo_mt) ? r2b_ba : rank_ba[1:0]);
    assign xfr_ba_last = (`TARGET_DESIGN == `FPGA) ? rank_ba_last[0]:
 	                ((rank_fifo_mt) ? sdr_req_norm_dma_last : rank_ba_last[0]);
-   
+
    assign rank_req[0] = i2x_req[xfr_ba];     // each rank generates requests
-			
+
    assign rank_req[1] = (rank_cnt < 3'h2) ? 1'b0 :
 			(rank_ba[3:2] == 2'b00) ? i2x_req[0] & ~i2x_cmd0[1] :
 			(rank_ba[3:2] == 2'b01) ? i2x_req[1] & ~i2x_cmd1[1] :
-			(rank_ba[3:2] == 2'b10) ? i2x_req[2] & ~i2x_cmd2[1] : 
+			(rank_ba[3:2] == 2'b10) ? i2x_req[2] & ~i2x_cmd2[1] :
 			i2x_req[3] & ~i2x_cmd3[1];
-			
+
    assign rank_req[2] = (rank_cnt < 3'h3) ? 1'b0 :
 			(rank_ba[5:4] == 2'b00) ? i2x_req[0] & ~i2x_cmd0[1] :
 			(rank_ba[5:4] == 2'b01) ? i2x_req[1] & ~i2x_cmd1[1] :
-			(rank_ba[5:4] == 2'b10) ? i2x_req[2] & ~i2x_cmd2[1] : 
+			(rank_ba[5:4] == 2'b10) ? i2x_req[2] & ~i2x_cmd2[1] :
 			i2x_req[3] & ~i2x_cmd3[1];
-			
+
    assign rank_req[3] = (rank_cnt < 3'h4) ? 1'b0 :
 			(rank_ba[7:6] == 2'b00) ? i2x_req[0] & ~i2x_cmd0[1] :
 			(rank_ba[7:6] == 2'b01) ? i2x_req[1] & ~i2x_cmd1[1] :
-			(rank_ba[7:6] == 2'b10) ? i2x_req[2] & ~i2x_cmd2[1] : 
+			(rank_ba[7:6] == 2'b10) ? i2x_req[2] & ~i2x_cmd2[1] :
 			i2x_req[3] & ~i2x_cmd3[1];
-			
+
    always @ (*) begin
       b2x_req = 1'b0;
       b2x_ba =   xfr_ba;
 
       if(`TARGET_DESIGN == `ASIC) begin // Support Multiple Rank request only on ASIC
-         if (rank_req[0]) begin 
+         if (rank_req[0]) begin
 	    b2x_req = 1'b1;
 	    b2x_ba = xfr_ba;
          end // if (rank_req[0])
-	 else if (rank_req[1]) begin 
+	 else if (rank_req[1]) begin
 	   b2x_req = 1'b1;
 	   b2x_ba = rank_ba[3:2];
         end // if (rank_req[1])
-        else if (rank_req[2]) begin 
+        else if (rank_req[2]) begin
 	  b2x_req = 1'b1;
 	  b2x_ba = rank_ba[5:4];
         end // if (rank_req[2])
-        else if (rank_req[3]) begin 
+        else if (rank_req[3]) begin
 	  b2x_req = 1'b1;
 	  b2x_ba = rank_ba[7:6];
         end // if (rank_req[3])
       end else begin // If FPGA
-         if (rank_req[0]) begin 
+         if (rank_req[0]) begin
 	    b2x_req = 1'b1;
 	 end
       end
@@ -261,19 +259,19 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
    assign b2x_addr = (b2x_ba == 2'b11) ? i2x_addr3 :
 		     (b2x_ba == 2'b10) ? i2x_addr2 :
 		     (b2x_ba == 2'b01) ? i2x_addr1 : i2x_addr0;
-   
+
    assign b2x_len = (b2x_ba == 2'b11) ? i2x_len3 :
 		    (b2x_ba == 2'b10) ? i2x_len2 :
 		    (b2x_ba == 2'b01) ? i2x_len1 : i2x_len0;
-   
+
    assign b2x_cmd = (b2x_ba == 2'b11) ? i2x_cmd3 :
 		    (b2x_ba == 2'b10) ? i2x_cmd2 :
 		    (b2x_ba == 2'b01) ? i2x_cmd1 : i2x_cmd0;
-   
+
    assign b2x_id = (b2x_ba == 2'b11) ? i2x_id3 :
 		   (b2x_ba == 2'b10) ? i2x_id2 :
 		   (b2x_ba == 2'b01) ? i2x_id1 : i2x_id0;
-   
+
    assign x2i_ack[0] = (b2x_ba == 2'b00) ? x2b_ack : 1'b0;
    assign x2i_ack[1] = (b2x_ba == 2'b01) ? x2b_ack : 1'b0;
    assign x2i_ack[2] = (b2x_ba == 2'b10) ? x2b_ack : 1'b0;
@@ -286,48 +284,55 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
    assign rank_fifo_wr = b2r_ack;
 
    assign rank_fifo_rd = b2x_req & b2x_cmd[1] & x2b_ack;
-   
-   assign rank_wr_sel[0] = (rank_cnt == 3'h0) ? rank_fifo_wr : 
-			   (rank_cnt == 3'h1) ? rank_fifo_wr & rank_fifo_rd : 
+
+   assign rank_wr_sel[0] = (rank_cnt == 3'h0) ? rank_fifo_wr :
+			   (rank_cnt == 3'h1) ? rank_fifo_wr & rank_fifo_rd :
 			   1'b0;
 
    assign rank_wr_sel[1] = (rank_cnt == 3'h1) ? rank_fifo_wr & ~rank_fifo_rd :
 			   (rank_cnt == 3'h2) ? rank_fifo_wr & rank_fifo_rd :
-			   1'b0; 
+			   1'b0;
 
    assign rank_wr_sel[2] = (rank_cnt == 3'h2) ? rank_fifo_wr & ~rank_fifo_rd :
 			   (rank_cnt == 3'h3) ? rank_fifo_wr & rank_fifo_rd :
-			   1'b0; 
+			   1'b0;
 
    assign rank_wr_sel[3] = (rank_cnt == 3'h3) ? rank_fifo_wr & ~rank_fifo_rd :
 			   (rank_cnt == 3'h4) ? rank_fifo_wr & rank_fifo_rd :
-			   1'b0; 
+			   1'b0;
 
    assign rank_fifo_mt = (rank_cnt == 3'b0) ? 1'b1 : 1'b0;
 
-   assign rank_fifo_full = (rank_cnt[2]) ? 1'b1 : 
-			   (rank_cnt[1:0] == a2b_req_depth) ? 1'b1 : 1'b0; 
+   assign rank_fifo_full = (rank_cnt[2]) ? 1'b1 :
+			   (rank_cnt[1:0] == a2b_req_depth) ? 1'b1 : 1'b0;
 
    // FIFO Check
 
    // synopsys translate_off
 
-   always @ (posedge clk) begin
+//   always @ (posedge clk) begin
 
-      if (~rank_fifo_wr & rank_fifo_rd && rank_cnt == 3'h0) begin
-	 $display ("%t: %m: ERROR!!! Read from empty Fifo", $time);
-	 $stop;
-      end // if (rank_fifo_rd && rank_cnt == 3'h0)
+//      if (~rank_fifo_wr & rank_fifo_rd && rank_cnt == 3'h0) begin
+//	 $display ("%t: %m: ERROR!!! Read from empty Fifo", $time);
+//	 $stop;
+//      end // if (rank_fifo_rd && rank_cnt == 3'h0)
 
-      if (rank_fifo_wr && ~rank_fifo_rd && rank_cnt == 3'h4) begin
-	 $display ("%t: %m: ERROR!!! Write to full Fifo", $time);
-	 $stop;
-      end // if (rank_fifo_wr && ~rank_fifo_rd && rank_cnt == 3'h4)
-      
-   end // always @ (posedge clk)
-   
+//      if (rank_fifo_wr && ~rank_fifo_rd && rank_cnt == 3'h4) begin
+//	 $display ("%t: %m: ERROR!!! Write to full Fifo", $time);
+//	 $stop;
+//      end // if (rank_fifo_wr && ~rank_fifo_rd && rank_cnt == 3'h4)
+
+//   end // always @ (posedge clk)
+
+assert property ( @(posedge clk)
+                  disable iff($isunknown(rank_fifo_wr) || $isunknown(rank_fifo_rd) || $isunknown(rank_cnt))  ~(rank_fifo_wr == 0'b1 & rank_fifo_rd == 1'b1 && rank_cnt == 3'h0)) else $error("%t: %m: ERROR!!! Read from empty Fifo", $time);
+
+
+assert property ( @(posedge clk)
+                    disable iff($isunknown(rank_fifo_wr) || $isunknown(rank_fifo_rd) || $isunknown(rank_cnt)) ~(rank_fifo_wr == 1'b1 & rank_fifo_rd == 0'b1 && rank_cnt == 3'h4)) else $error("%t: %m: ERROR!!! Write to full Fifo", $time);
+
    // synopsys translate_on
-      
+
    always @ (posedge clk)
       if (~reset_n) begin
 	 rank_cnt <= 3'b0;
@@ -343,13 +348,13 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
 
 	 rank_ba[1:0] <= (rank_wr_sel[0]) ? r2b_ba :
 			 (rank_fifo_rd) ? rank_ba[3:2] : rank_ba[1:0];
-	 
+
 	 rank_ba[3:2] <= (rank_wr_sel[1]) ? r2b_ba :
 			 (rank_fifo_rd) ? rank_ba[5:4] : rank_ba[3:2];
-	 
+
 	 rank_ba[5:4] <= (rank_wr_sel[2]) ? r2b_ba :
 			 (rank_fifo_rd) ? rank_ba[7:6] : rank_ba[5:4];
-	 
+
 	 rank_ba[7:6] <= (rank_wr_sel[3]) ? r2b_ba :
 			 (rank_fifo_rd) ? 2'b00 : rank_ba[7:6];
 
@@ -370,12 +375,12 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
          end
 
       end // else: !if(~reset_n)
-   
+
    assign xfr_ok[0] = (xfr_ba == 2'b00) ? 1'b1 : 1'b0;
    assign xfr_ok[1] = (xfr_ba == 2'b01) ? 1'b1 : 1'b0;
    assign xfr_ok[2] = (xfr_ba == 2'b10) ? 1'b1 : 1'b0;
    assign xfr_ok[3] = (xfr_ba == 2'b11) ? 1'b1 : 1'b0;
-   
+
    /****************************************************************************/
    // Instantiate Bank Ctl FSM 0
 
@@ -405,7 +410,7 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
 			   .b2x_len (i2x_len0),
 			   .b2x_cmd (i2x_cmd0),
 			   .x2b_ack (x2i_ack[0]),
-		     
+
 			   /* Status to/from xfr_ctl */
 			   .tras_ok (tras_ok[0]),
 			   .xfr_ok (xfr_ok[0]),
@@ -421,7 +426,7 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
 			   .tras_delay (tras_delay),
 			   .trp_delay (trp_delay),
 			   .trcd_delay (trcd_delay));
-   
+
    /****************************************************************************/
    // Instantiate Bank Ctl FSM 1
 
@@ -451,9 +456,9 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
 			   .b2x_len (i2x_len1),
 			   .b2x_cmd (i2x_cmd1),
 			   .x2b_ack (x2i_ack[1]),
-		     
+
 			   /* Status to/from xfr_ctl */
-			   .tras_ok (tras_ok[1]),           
+			   .tras_ok (tras_ok[1]),
 			   .xfr_ok (xfr_ok[1]),
 			   .x2b_refresh (x2b_refresh),
 			   .x2b_pre_ok (x2b_pre_ok[1]),
@@ -467,7 +472,7 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
 			   .tras_delay (tras_delay),
 			   .trp_delay (trp_delay),
 			   .trcd_delay (trcd_delay));
-   
+
    /****************************************************************************/
    // Instantiate Bank Ctl FSM 2
 
@@ -497,9 +502,9 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
 			   .b2x_len (i2x_len2),
 			   .b2x_cmd (i2x_cmd2),
 			   .x2b_ack (x2i_ack[2]),
-		     
+
 			   /* Status to/from xfr_ctl */
-			   .tras_ok (tras_ok[2]),           
+			   .tras_ok (tras_ok[2]),
 			   .xfr_ok (xfr_ok[2]),
 			   .x2b_refresh (x2b_refresh),
 			   .x2b_pre_ok (x2b_pre_ok[2]),
@@ -513,7 +518,7 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
 			   .tras_delay (tras_delay),
 			   .trp_delay (trp_delay),
 			   .trcd_delay (trcd_delay));
-   
+
    /****************************************************************************/
    // Instantiate Bank Ctl FSM 3
 
@@ -543,9 +548,9 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
 			   .b2x_len (i2x_len3),
 			   .b2x_cmd (i2x_cmd3),
 			   .x2b_ack (x2i_ack[3]),
-		     
+
 			   /* Status to/from xfr_ctl */
-			   .tras_ok (tras_ok[3]),           
+			   .tras_ok (tras_ok[3]),
 			   .xfr_ok (xfr_ok[3]),
 			   .x2b_refresh (x2b_refresh),
 			   .x2b_pre_ok (x2b_pre_ok[3]),
@@ -559,13 +564,13 @@ parameter  SDR_BW   = 2;   // SDR Byte Width
 			   .tras_delay (tras_delay),
 			   .trp_delay (trp_delay),
 			   .trcd_delay (trcd_delay));
-   
+
 
 /* address for current xfr, debug only */
 wire [12:0] cur_row = (xfr_bank_sel==3) ? bank3_row:
-			(xfr_bank_sel==2) ? bank2_row: 
-			(xfr_bank_sel==1) ? bank1_row: bank0_row; 
+			(xfr_bank_sel==2) ? bank2_row:
+			(xfr_bank_sel==1) ? bank1_row: bank0_row;
 
- 
+
 
 endmodule // sdr_bank_ctl
