@@ -10,7 +10,6 @@ interface intf_wishbone
   #(parameter dw=32)
   (input logic sys_clk, output logic RESETN);
   //declaring the signals
-  	logic				RESETN;
 	logic             wb_stb_i           ;
 	logic            wb_ack_o           ;
 	logic  [25:0]     wb_addr_i          ;
@@ -37,3 +36,6 @@ interface intf_sdram16
 	logic [1:0]        sdr_dqm            ;
 	logic             sdr_init_done			 ;
 endinterface
+
+
+
