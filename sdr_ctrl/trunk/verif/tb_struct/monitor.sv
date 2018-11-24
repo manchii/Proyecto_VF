@@ -36,11 +36,16 @@ reg [7:0]  bl;
 
 int i,j;
 reg [31:0]   exp_data;
-begin
+queue_ret scb_ret;
+  begin
 
-   Address = scb.afifo.pop_front();
-   bl      = scb.bfifo.pop_front();
-  $display("asdasdasdas %x",bl);
+//   Address = scb.afifo.pop_front();
+//   bl      = scb.bfifo.pop_front();
+   scb_ret = scb.pop();
+   Address = scb_ret.address;
+   bl      = scb_ret.burst;
+
+    
   @ (negedge vif.sys_clk);
 
       for(j=0; j < bl; j++) begin
@@ -50,7 +55,7 @@ begin
         .wb_we_i         = 0;
          vif.wb_addr_i       = Address[31:2]+j;
 
-         exp_data        = scb.dfifo.pop_front(); // Exptected Read Data
+        exp_data        = scb_ret.data.pop_front(); // Exptected Read Data
          do begin
            @ (posedge vif.sys_clk);
          end while(vif.wb_ack_o == 1'b0);
