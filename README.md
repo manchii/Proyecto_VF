@@ -116,7 +116,21 @@ Considerando que en una conexión estándar [CYC_I] se conecta con [CYC_o] y que
 ![](https://github.com/manchii/Proyecto_VF/blob/master/images/conexion_estandar.png)
 
 
-## Lista de comandos del controlador
+## Reglas para inicialización
+
+>>_SDRAM must be powered up and initialized in a predefined manner. Operational
+procedures other than those specified may result in undefined operation. Once power is
+applied to VDD and the clock is stable, the SDRAM requires a 100 μs delay prior to
+issuing any command other than a COMMAND INHIBIT or NOP. Starting at some point
+during this 100 μs period and continuing at least through the end of this period,
+COMMAND INHIBIT or NOP commands should be applied._
+>>_Once the 100 μs delay has been satisfied with at least one COMMAND INHIBIT or NOP
+command having been applied, a PRECHARGE command should be applied. All device
+banks must then be precharged, thereby placing the device in the all banks idle state.
+Once in the idle state, two AUTO REFRESH cycles must be performed. After two
+refresh cycles are complete, SDRAM ready for mode register programming. Because the
+mode registers will power up in unknown state, it should be loaded prior to applying any
+operational command._
 
 ```systemverilog
 // SDRAM Commands (CS_N, RAS_N, CAS_N, WE_N)
