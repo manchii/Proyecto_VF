@@ -116,7 +116,21 @@ Considerando que en una conexión estándar [CYC_I] se conecta con [CYC_o] y que
 ![](https://github.com/manchii/Proyecto_VF/blob/master/images/conexion_estandar.png)
 
 
+## Lista de comandos del controlador
 
+```systemverilog
+// SDRAM Commands (CS_N, RAS_N, CAS_N, WE_N)
 
+`define SDR_DESEL        4'b1111
+`define SDR_NOOP         4'b0111
+`define SDR_ACTIVATE     4'b0011
+`define SDR_READ         4'b0101
+`define SDR_WRITE        4'b0100
+`define SDR_BT           4'b0110
+`define SDR_PRECHARGE    4'b0010
+`define SDR_REFRESH      4'b0001
+`define SDR_MODE         4'b0000
+```
 
+![](https://github.com/manchii/Proyecto_VF/blob/master/images/comandos.jpeg)
 
